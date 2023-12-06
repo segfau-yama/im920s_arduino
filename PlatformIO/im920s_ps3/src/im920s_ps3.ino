@@ -58,9 +58,9 @@ void setup() {
   Serial.begin(19200);
   Usb.Init();
 
-  IM920sSerial.println("ENWR");
+  IM920sSerial.println("ENWR");  // 設定変更許可
   delay(100);
-  IM920sSerial.println("ECIO");  // 文字列通信モードに変更
+  IM920sSerial.println("DCIO");  // 16進数通信モードに変更
 }
 
 void loop() {
@@ -103,6 +103,7 @@ void loop() {
     IM920sSerial.println(command);
     Serial.println(command);
     IM920s_send.BTN = 0;  // ボタンデータ初期化
+    IM920s_send.SUM = 0;  // Check SUM初期化
     send_data = "";
   }
   delay(100);
