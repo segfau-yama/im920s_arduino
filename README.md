@@ -2,7 +2,7 @@
 
 Arduino UNO と IM920s でシリアル通信を行うサンプルスケッチ
 
-## フォルダ内容
+## プログラム内容
 
 1. im920s_pairing<br>
    im920s のペアリング用プログラム、arduino uno に取り付けた IM920s にシリアルモニタから IM コマンドを打ち込み事が可能
@@ -48,7 +48,7 @@ Arduino UNO と IM920s でシリアル通信を行うサンプルスケッチ
 
 ### Arduino IDE を利用する方法
 
-1. Arduino IDE で**im920s_pairing/src** にある **im920s_pairing.ino**を開く
+1. Arduino IDE で **Arduino/im920s_pairing** にある **im920s_pairing.ino**を開く
 1. 子機と親機にプログラムを書き込む
 1. Tera Term でのペアリングで記載されているコマンドをシリアルモニタに打ち込む
    <br><img src="img/10.png" width="60%">
@@ -57,12 +57,12 @@ Arduino UNO と IM920s でシリアル通信を行うサンプルスケッチ
 
 ### Arduino IDE の場合
 
-1. src フォルダの中にある.ino ファイルをクリックして Arduino IDE で開く。
+1. リポジトリの **Arduino/** の中にある.ino ファイルをクリックして Arduino IDE で開く。
 1. 以降書き込み手順については割愛
 
 ### PlatformIO IDE の場合
 
 1. vscode を開く
 1. PlatformIO アイコンを選択し左メニューから**Pick a folder**をクリック
-1. im920s_arduino 内の 3 つのフォルダから書き込みたいプログラムが入っているフォルダを選択する。
+1. **PlatformIO/** 内の 3 つのフォルダから書き込みたいプログラムが入っているフォルダを選択する。
 1. **Command+Shift+P**もしくは画面左下の矢印ボタンを押して書き込み

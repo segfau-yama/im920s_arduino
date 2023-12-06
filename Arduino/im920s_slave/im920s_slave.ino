@@ -1,16 +1,16 @@
 /*
 内容：IM920sのPS3データ送信側プログラム
 作成者：segfau-yama
-githubリポジトリ：
+githubリポジトリ：https://github.com/segfau-yama/im920s_arduino
 連絡先(discord)：@.yamayama
 
-ペアリング前提であるためIM920sの接続方法についてはリポジトリのを参照
+ペアリング前提であるためIM920sの接続方法についてはリポジトリのREADMEを参照
 
 受信データ形式：aa,bbbb,dd:受信データ<CR><LF>
   aa  ：ダミー（1バイト、00h固定）
   bbbb：ノード番号（2バイト）
   dd  ：受信データの電波強度
-  受信データ：abcde…形式で各バイトをASCII1文字で出力
+  受信データ：Dualshock3Protocolに沿って受信
 */
 
 #include <SoftwareSerial.h>
@@ -22,9 +22,8 @@ SoftwareSerial IM920sSerial(8, 9);  // IM920s通信用．
 
 // IM920s受信データ共用体
 union Dualshock3Protocol {
-  uint8_t data[11];
+  uint8_t data[9];
   struct {
-    uint8_t HEAD;  // 先頭Byte
     uint8_t LX;    // LStick X
     uint8_t LY;    // LStick Y
     uint8_t RX;    // RStick X
@@ -33,7 +32,6 @@ union Dualshock3Protocol {
     uint8_t RS;    // R2
     uint16_t BTN;  // デジタルボタン割り当て
     uint8_t SUM;   // チェックSUM
-    uint8_t TAIL;  // 末尾Byte
   };
 };
 

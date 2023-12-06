@@ -1,3 +1,10 @@
+/*
+内容：IM920sペアリング用プログラム
+作成者：segfau-yama
+githubリポジトリ：https://github.com/segfau-yama/im920s_arduino
+連絡先(discord)：@.yamayama
+*/
+
 #include <SoftwareSerial.h>
 
 SoftwareSerial IM920sSerial(8, 9);

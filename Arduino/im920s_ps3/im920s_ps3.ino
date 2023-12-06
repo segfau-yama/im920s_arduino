@@ -1,11 +1,12 @@
 /*
 内容：IM920sのPS3データ送信側プログラム
 作成者：segfau-yama
-githubリポジトリ：
+githubリポジトリ：https://github.com/segfau-yama/im920s_arduino
 連絡先(discord)：@.yamayama
 参考：https://github.com/RoboconHirose/Robocon2019_teamB_code/blob/master/Robocon2019-B_slave/main.cpp
 
-ペアリング前提であるためIM920sの接続方法についてはリポジトリのを参照
+ペアリング前提であるためIM920sの接続方法についてはリポジトリのREADMEを参照
+
 */
 
 #include <PS3USB.h>
