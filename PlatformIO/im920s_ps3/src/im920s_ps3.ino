@@ -24,18 +24,45 @@ PS3USB PS3(&Usb);
 SoftwareSerial IM920sSerial(
     A4, A5);  // 9pinがUSB host Shieldのピンと干渉するためA4,A5を利用
 
-// IM920s送信データ共用体
+// デジタルボタン共用体
+union DigitalButtons {
+  uint16_t all;
+  struct {
+    uint8_t high;
+    uint8_t low;
+  };
+  struct {
+    unsigned TRIANGLE : 1;
+    unsigned CIRCLE : 1;
+    unsigned CROSS : 1;
+    unsigned SQUARE : 1;
+    unsigned UP : 1;
+    unsigned RIGHT : 1;
+    unsigned DOWN : 1;
+    unsigned LEFT : 1;
+    unsigned L1 : 1;
+    unsigned R1 : 1;
+    unsigned L3 : 1;
+    unsigned R3 : 1;
+    unsigned SELECT : 1;
+    unsigned START : 1;
+    unsigned PS : 1;
+    unsigned NO : 1;
+  };
+};
+
+// IM920s受信データ共用体
 union Dualshock3Protocol {
   uint8_t data[9];
   struct {
-    uint8_t LX;    // LStick X
-    uint8_t LY;    // LStick Y
-    uint8_t RX;    // RStick X
-    uint8_t RY;    // RStick Y
-    uint8_t LS;    // L2
-    uint8_t RS;    // R2
-    uint16_t BTN;  // デジタルボタン割り当て
-    uint8_t SUM;   // チェックSUM
+    uint8_t LX;          // LStick X
+    uint8_t LY;          // LStick Y
+    uint8_t RX;          // RStick X
+    uint8_t RY;          // RStick Y
+    uint8_t LS;          // L2
+    uint8_t RS;          // R2
+    DigitalButtons BTN;  // デジタルボタン割り当て
+    uint8_t SUM;         // チェックSUM
   };
 };
 
@@ -78,10 +105,10 @@ void loop() {
   // デジタルボタン取得：1bitごとに15個のボタンデータを格納
   // IM920s_send.data[7]: ボタン上位bit
   // IM920s_send.data[8]: ボタン下位bit
-  bitWrite(IM920s_send.BTN, 16, 0);  // 16bit目はボタン未割り当て
+  bitWrite(IM920s_send.BTN.all, 16, 0);  // 16bit目はボタン未割り当て
   for (i = 0; i < 15; i++) {
     if (PS3.getButtonPress(PS3_BTN[i])) {
-      bitWrite(IM920s_send.BTN, i, 1);
+      bitWrite(IM920s_send.BTN.all, i, 1);
     }
   }
 

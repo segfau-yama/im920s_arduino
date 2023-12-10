@@ -20,12 +20,12 @@ githubリポジトリ：https://github.com/segfau-yama/im920s_arduino
 
 SoftwareSerial IM920sSerial(8, 9);  // IM920s通信用．
 
-// デジタルボタン共用体
+// DualShock3デジタルボタン共用体
 union DigitalButtons {
   uint16_t all;
   struct {
-    uint8_t high;
-    uint8_t low;
+    uint8_t high;  // 上位8bit
+    uint8_t low;   // 下位8bit
   };
   struct {
     unsigned TRIANGLE : 1;
@@ -43,7 +43,7 @@ union DigitalButtons {
     unsigned SELECT : 1;
     unsigned START : 1;
     unsigned PS : 1;
-    unsigned NO : 1;
+    unsigned NO : 1;  // ボタン未割り当て
   };
 };
 
@@ -96,10 +96,11 @@ void loop() {
       recv_data = "";
 
       // recv_datasをIM920s_recvに格納
-      sscanf(recv_datas, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx, %hhx, %hhx, %hhx",
+      sscanf(recv_datas, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx",
              &IM920s_recv.LX, &IM920s_recv.LY, &IM920s_recv.RX, &IM920s_recv.RY,
              &IM920s_recv.LS, &IM920s_recv.RS, &IM920s_recv.BTN.high,
              &IM920s_recv.BTN.low, &IM920s_recv.SUM);
+
       // チェックSUM
       for (i = 0; i < 7; i++) {
         recv_SUM += IM920s_recv.data[i];
@@ -109,7 +110,6 @@ void loop() {
       }
 
       // ジョイスティック例
-
       uint8_t LX_delta = abs(IM920s_recv.LX - LX_past);
       uint8_t LY_delta = abs(IM920s_recv.LY - LY_past);
       if (LX_delta >= 10 || LY_delta >= 10) {
