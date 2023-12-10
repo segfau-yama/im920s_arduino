@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "PlatformIO/im920s_slave"
+		},
+		{
+			"name": "im920s_ps3",
+			"path": "PlatformIO/im920s_ps3"
+		},
+		{
+			"name": "im920s_pairing",
+			"path": "PlatformIO/im920s_pairing"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"iosfwd": "cpp",
+			"locale": "cpp"
+		}
+	}
+}

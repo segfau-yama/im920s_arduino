@@ -69,7 +69,7 @@ union Dualshock3Protocol {
 Dualshock3Protocol IM920s_send;
 uint8_t i;
 char command[30] = "";
-String send_data = "";
+char send_data[30] = "";
 
 // ジョイスティック配列
 const uint32_t PS3_Hat[4] = {LeftHatX, LeftHatY, RightHatX, RightHatY};
@@ -118,20 +118,17 @@ void loop() {
   }
 
   if (PS3.PS3Connected) {
-    // 送信データ列
-    for (auto data : IM920s_send.data) {
-      char convert_data[2];
-      sprintf(convert_data, "%02X", data);
-      send_data = send_data + convert_data;
-    }
+    // 送信データをsend_dataに格納
+    sprintf(send_data, "%02X %02X %02X %02X %02X %02X %02X %02X",
+            IM920s_send.LX, IM920s_send.LY, IM920s_send.RX, IM920s_send.RY,
+            IM920s_send.LS, IM920s_send.RS, IM920s_send.BTN, IM920s_send.SUM);
+
     // IM920s_send.dataを2桁16進数形式で送信
-    sprintf(command, "TXDA %s",
-            send_data.c_str());  // ノード番号(NODE)にデータ送信
+    sprintf(command, "TXDA %s", send_data);  // 全体にデータ送信
     IM920sSerial.println(command);
     Serial.println(command);
     IM920s_send.BTN = 0;  // ボタンデータ初期化
     IM920s_send.SUM = 0;  // Check SUM初期化
-    send_data = "";
   }
-  delay(100);
+  delay(50);
 }

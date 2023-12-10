@@ -70,6 +70,7 @@ String recv_data;
 char recv_datas[32];
 uint8_t recv_SUM = 0;
 uint8_t LX_past, LY_past = 0;
+int8_t start, end;
 
 void setup() {
   IM920sSerial.begin(19200);
@@ -78,8 +79,6 @@ void setup() {
   IM920sSerial.println("ENWR");  // 設定変更許可
   delay(100);
   IM920sSerial.println("DCIO");  // 16進数通信モードに変更
-
-  Serial.println("Start connecting");
 }
 
 void loop() {
@@ -87,59 +86,57 @@ void loop() {
   if (IM920sSerial.available()) {
     data = IM920sSerial.read();
     recv_data = recv_data + data;
-    int8_t start = recv_data.indexOf(":");   // :の配列番号を取得
-    int8_t end = recv_data.indexOf("\r\n");  // \r\nの配列番号を取得
-    if (end >= 0) {
-      // DualShock3のデータのみを切り取る
-      recv_data = recv_data.substring(start + 1, end);
-      recv_data.toCharArray(recv_datas, sizeof(recv_datas) + 1);
-      recv_data = "";
+    start = recv_data.indexOf(":");   // :の配列番号を取得
+    end = recv_data.indexOf("\r\n");  // \r\nの配列番号を取得
+  }
+  if (end > 10) {
+    // DualShock3のデータのみを切り取る
+    recv_data = recv_data.substring(start + 1, end);
+    recv_data.toCharArray(recv_datas, sizeof(recv_datas) + 1);
+    recv_data = "";
+    // recv_datasをIM920s_recvに格納
+    sscanf(recv_datas, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx",
+           &IM920s_recv.LX, &IM920s_recv.LY, &IM920s_recv.RX, &IM920s_recv.RY,
+           &IM920s_recv.LS, &IM920s_recv.RS, &IM920s_recv.BTN.high,
+           &IM920s_recv.BTN.low, &IM920s_recv.SUM);
 
-      // recv_datasをIM920s_recvに格納
-      sscanf(recv_datas, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx",
-             &IM920s_recv.LX, &IM920s_recv.LY, &IM920s_recv.RX, &IM920s_recv.RY,
-             &IM920s_recv.LS, &IM920s_recv.RS, &IM920s_recv.BTN.high,
-             &IM920s_recv.BTN.low, &IM920s_recv.SUM);
+    // チェックSUM
+    for (i = 0; i < 7; i++) {
+      recv_SUM += IM920s_recv.data[i];
+    }
+    if (recv_SUM != IM920s_recv.SUM) {
+      Serial.println("Check SUM failed!");
+    }
 
-      // チェックSUM
-      for (i = 0; i < 7; i++) {
-        recv_SUM += IM920s_recv.data[i];
-      }
-      if (recv_SUM != IM920s_recv.SUM) {
-        Serial.println("Check SUM failed!");
-      }
+    // ジョイスティック例
+    uint8_t LX_delta = abs(IM920s_recv.LX - LX_past);
+    uint8_t LY_delta = abs(IM920s_recv.LY - LY_past);
+    if (LX_delta >= 10 || LY_delta >= 10) {
+      sprintf(command, "LX: %d ", IM920s_recv.LX);
+      Serial.print(command);
+      sprintf(command, "LY: %d", IM920s_recv.LY);
+      Serial.println(command);
+      delay(50);
+    }
 
-      // ジョイスティック例
-      uint8_t LX_delta = abs(IM920s_recv.LX - LX_past);
-      uint8_t LY_delta = abs(IM920s_recv.LY - LY_past);
-      if (LX_delta >= 10 || LY_delta >= 10) {
-        sprintf(command, "LX: %d ", IM920s_recv.LX);
-        Serial.print(command);
-        sprintf(command, "LY: %d", IM920s_recv.LY);
-        Serial.println(command);
-        delay(50);
-      }
-
-      // デジタルボタン例
+    // デジタルボタン例
+    if (IM920s_recv.BTN.all > 0) {
       if (IM920s_recv.BTN.CIRCLE) {
         Serial.println("CIRCLE");
-        delay(50);
       }
       if (IM920s_recv.BTN.LEFT) {
         Serial.println("LEFT");
-        delay(50);
       }
       if (IM920s_recv.BTN.L3) {
         Serial.println("L3");
-        delay(50);
       }
       if (IM920s_recv.BTN.PS) {
         Serial.println("PS");
-        delay(50);
       }
+      delay(50);
     }
   }
-  LX_past = IM920s_recv.LX;
+  LX_past = IM920s_recv.LX;  // LXの過去
   LY_past = IM920s_recv.LY;
   recv_SUM = 0;
 }
